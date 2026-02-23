@@ -1,6 +1,6 @@
 namespace ProjectHub.Api.DTOs
 {
-    public class TaskitemDto
+    public class TaskItemDto
     {
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
