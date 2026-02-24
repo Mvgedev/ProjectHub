@@ -34,14 +34,16 @@ namespace ProjectHub.Api.Repositories {
 
 		}
 
-		public Task DeleteProjectAsync(Guid id)
+		public Task<bool> DeleteProjectAsync(Guid id)
 		{
 			Project? toDelete = RetrieveProjectById(id);
+			bool ret = false;
 			if (toDelete != null)
 			{
 				Projects.Remove(toDelete);
+				ret = true;
 			}
-			return Task.CompletedTask;
+			return Task.FromResult(ret);
 		}
 
 		private Project? RetrieveProjectById(Guid id)

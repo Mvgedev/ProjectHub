@@ -8,6 +8,6 @@ namespace ProjectHub.Api.Repositories
         Task<IEnumerable<Project>> GetAllProjectsAsync(Guid userId);
         Task<Project> CreateProjectAsync(Project project);
         Task<bool> UpdateProjectAsync(Project project);
-        Task DeleteProjectAsync(Guid id);
+        Task<bool> DeleteProjectAsync(Guid id);
     }
 }

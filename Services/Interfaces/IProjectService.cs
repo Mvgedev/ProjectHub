@@ -7,7 +7,7 @@ namespace ProjectHub.Api.Services
         Task<ProjectDto> GetProjectByIdAsync(Guid id);
         Task<IEnumerable<ProjectDto>> GetAllProjectsAsync(Guid userId);
         Task<ProjectDto> CreateProjectAsync(CreateProjectDto dto, Guid userId);
-        Task UpdateProjectAsync(ProjectDto dto);
+        Task UpdateProjectAsync(Guid projId, UpdateProjectDto dto);
         Task DeleteProjectAsync(Guid id);
     }
 }
