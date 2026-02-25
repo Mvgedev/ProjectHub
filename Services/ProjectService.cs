@@ -1,6 +1,7 @@
 using ProjectHub.Api.DTOs;
 using ProjectHub.Api.Models;
 using ProjectHub.Api.Repositories;
+using ProjectHub.Api.Exceptions;
 
 namespace ProjectHub.Api.Services
 {
@@ -13,11 +14,13 @@ namespace ProjectHub.Api.Services
             _repository = repository;
         }
 
-        public async Task<ProjectDto> GetProjectByIdAsync(Guid id)
+        public async Task<ProjectDto> GetProjectByIdAsync(Guid id, Guid userId)
         {
             Project? proj =  await _repository.GetProjectByIdAsync(id);
             if (proj == null)
                 throw new KeyNotFoundException("Project not found");
+            if (proj.OwnerId != userId)
+                throw new UnauthorizedAccessException("Access Denied");
             ProjectDto ret = MappingProjectToDto(proj);
             return ret;
         }
@@ -42,11 +45,13 @@ namespace ProjectHub.Api.Services
             return MappingProjectToDto(result);
         }
 
-        public async Task UpdateProjectAsync(Guid projId, UpdateProjectDto dto)
+        public async Task UpdateProjectAsync(Guid projId, UpdateProjectDto dto, Guid userId)
         {
             Project? proj = await _repository.GetProjectByIdAsync(projId);
             if (proj == null)
                 throw new KeyNotFoundException("Project not found");
+            if (proj.OwnerId != userId)
+                throw new UnauthorizedAccessException("Access Denied");
 
             proj.Name = dto.Name;
             proj.Desc = dto.Desc;
@@ -54,14 +59,20 @@ namespace ProjectHub.Api.Services
             bool updated = await _repository.UpdateProjectAsync(proj);
 
             if (!updated)
-                throw new KeyNotFoundException("Update failed");
+                throw new UpdateFailedException("Update failed");
         }
 
-        public async Task DeleteProjectAsync(Guid id)
+        public async Task DeleteProjectAsync(Guid id, Guid userId)
         {
+            Project? proj = await _repository.GetProjectByIdAsync(id);
+            if (proj == null)
+                throw new KeyNotFoundException("Project not found");
+            if (proj.OwnerId != userId)
+                throw new UnauthorizedAccessException("Access Denied");
             bool deleted = await _repository.DeleteProjectAsync(id);
             if (!deleted)
-                throw new KeyNotFoundException("Project not found");
+                throw new DeleteFailedException("Delete failed");
+                
         }
 
         private ProjectDto MappingProjectToDto(Project proj)
